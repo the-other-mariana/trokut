@@ -7,3 +7,8 @@ body {
 canvas {
     display: block;
 }
+
+.app-icon{
+    height: 20px;
+    padding-right: 5px;
+}
