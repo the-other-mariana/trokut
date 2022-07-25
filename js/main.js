@@ -40,6 +40,27 @@ const mesh = new THREE.Mesh( geometry, material );
 
 scene.add(mesh);
 
+const vertices2 = [];
+
+for ( let i = 0; i < 10000; i ++ ) {
+
+	const x = randFloatSpread( 2000 );
+	const y = randFloatSpread( 2000 );
+	const z = randFloatSpread( 2000 );
+
+	vertices2.push( x, y, z );
+
+}
+
+const geometry2 = new THREE.BufferGeometry();
+geometry2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices2, 3 ) );
+
+const material2 = new THREE.PointsMaterial( { color: 0x888888 } );
+
+const points = new THREE.Points( geometry2, material2 );
+
+scene.add( points );
+
 // in order to see colors, we need light
 // light params: color, intensity, distance
 var light = new THREE.PointLight(0xFFFFFF, 1, 500);
