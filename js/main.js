@@ -2,12 +2,40 @@ var objIndex = 0;
 var zPos = 1.0;
 var g_verts = [[]];
 var g_transforms = [[]];
+var scene;
+var camera;
+var renderer;
 
 var mode = "normal";
+var guidePlaneWidth = 20;
 
 function updateTextInput(val) {
     zPos = parseFloat(val);
     document.getElementById('textInput').value = val;
+
+    renderScene();
+}
+
+function addGuidePlane(){
+    const guidePlaneGeo = new THREE.BufferGeometry();
+    const guidePlaneVerts = new Float32Array( [
+        -guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos,
+        guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos,
+        guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
+
+        guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
+        -guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
+        -guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos
+    ] );
+
+    guidePlaneGeo.setAttribute( 'position', new THREE.BufferAttribute( guidePlaneVerts, 3 ) );
+    const guidePlaneMat = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+    guidePlaneMat.opacity = 0.3;
+    guidePlaneMat.transparent = true;
+    const guidePlaneMesh = new THREE.Mesh( guidePlaneGeo, guidePlaneMat );
+
+    scene.add( guidePlaneMesh );
+    renderer.render(scene, camera);
 }
 
 function getNewTransformMatrix(){
@@ -39,7 +67,7 @@ function newObject(event){
     console.log("New Object #" + objIndex);
 }
 
-function mouseToScenePosition(ev, camera, scene){
+function mouseToScenePosition(ev){
     // normalized pos of the cursor
     const mouse = new THREE.Vector2();
     // coords for the pos where the ray intersects with the plane
@@ -63,17 +91,17 @@ function mouseToScenePosition(ev, camera, scene){
     return intersection;
 }
 
-function canvasClick(ev, camera, renderer, scene){
-    pt = mouseToScenePosition(ev, camera, scene);
+function canvasClick(ev){
+    pt = mouseToScenePosition(ev);
 
     g_verts[objIndex].push(pt.x);
     g_verts[objIndex].push(pt.y);
     g_verts[objIndex].push(pt.z);
 
-    renderScene(camera, renderer);
+    renderScene();
 }
 
-function renderScene(camera, renderer, scene){
+function renderScene(){
     scene = new THREE.Scene();
     renderer.render(scene, camera);
 
@@ -103,15 +131,16 @@ function renderScene(camera, renderer, scene){
     light.position.set(10, 0, 25);
     scene.add(light);
 
+    addGuidePlane();
+
     renderer.render(scene, camera);
 }
 
 function main(){
-    var scene;
     scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 0, 40);
-    var renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor("#e5e5e5");
     renderer.setSize(window.innerWidth, window.innerHeight);
     var canvas = renderer.domElement;
@@ -122,7 +151,7 @@ function main(){
     
     canvas.onclick = function(ev){
         console.log('canvas clicked!');
-        canvasClick(ev, camera, renderer, scene);
+        canvasClick(ev, );
     }
 
     window.addEventListener('resize', () => {
@@ -132,7 +161,7 @@ function main(){
     });
 
     initTransforms();
-    renderScene(camera, renderer);
+    renderScene();
 }
 
 main();
