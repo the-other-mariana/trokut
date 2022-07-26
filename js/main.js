@@ -34,36 +34,42 @@ function newObject(event){
     console.log("New Object #" + objIndex);
 }
 
-function canvasClick(ev, canvas, camera, renderer){
-    /*
-    var x = ev.pageX;
-    var y = ev.pageY;
-    var z = parseFloat(zPos);
+function mouseToScenePosition(ev, camera, scene){
+    // normalized pos of the cursor
+    const mouse = new THREE.Vector2();
+    // coords for the pos where the ray intersects with the plane
+    const intersection = new THREE.Vector3();
+    // dir of the plane ( normal )
+    const planeNormal = new THREE.Vector3();
+    // plane created every time cursor moves
+    const plane = new THREE.Plane();
+    const raycaster = new THREE.Raycaster();
 
-    var rect = ev.target.getBoundingClientRect();
-    console.log(rect.top);
-
-    x = ((x) - canvas.width/2)/(canvas.width/2);
-    y = (canvas.height/2 - (y))/(canvas.height/2);*/
-    var raycaster = new THREE.Raycaster();
-    var mouse = new THREE.Vector2();
-
-    ev.preventDefault();
     mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (ev.clientY / window.innerHeight) * 2 + 1;
-
-    var z = parseFloat(zPos);
+    mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
+    // unit normal vector as normal of the plane
+    planeNormal.copy(camera.position).normalize();
+    plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+    // raycast from camera to mouse
     raycaster.setFromCamera(mouse, camera);
+    // store objects in 2nd param
+    raycaster.ray.intersectPlane(plane, intersection);
 
-    g_verts[objIndex].push(mouse.x);
-    g_verts[objIndex].push(mouse.y);
-    g_verts[objIndex].push(z);
+    return intersection;
+}
+
+function canvasClick(ev, camera, renderer, scene){
+    pt = mouseToScenePosition(ev, camera, scene);
+
+    g_verts[objIndex].push(pt.x);
+    g_verts[objIndex].push(pt.y);
+    g_verts[objIndex].push(pt.z);
 
     renderScene(camera, renderer);
 }
 
-function renderScene(camera, renderer){
-    var scene = new THREE.Scene();
+function renderScene(camera, renderer, scene){
+    scene = new THREE.Scene();
     renderer.render(scene, camera);
 
     // for loop through all object's vertices
@@ -87,18 +93,22 @@ function renderScene(camera, renderer){
 }
 
 function main(){
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 10;
+    var scene;
+    scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor("#e5e5e5");
     renderer.setSize(window.innerWidth, window.innerHeight);
     var canvas = renderer.domElement;
     canvas.setAttribute('id', 'canvas');
+    canvas.style.zIndex = 1;
+
     document.body.appendChild(canvas);
     
     canvas.onclick = function(ev){
         console.log('canvas clicked!');
-        canvasClick(ev, canvas, camera, renderer);
+        canvasClick(ev, camera, renderer, scene);
     }
 
     window.addEventListener('resize', () => {

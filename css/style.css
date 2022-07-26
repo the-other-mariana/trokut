@@ -12,3 +12,7 @@ canvas {
     height: 20px;
     padding-right: 5px;
 }
+
+#btn-new{
+    position: relative;
+}
