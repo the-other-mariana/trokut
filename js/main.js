@@ -7,7 +7,9 @@ var camera;
 var renderer;
 
 var mode = "normal";
-var guidePlaneWidth = 20;
+var factor = 0.01;
+var guidePlaneWidth = window.innerWidth * factor;
+var guidePlaneHeight = window.innerHeight * factor;
 
 function updateTextInput(val) {
     zPos = parseFloat(val);
@@ -16,16 +18,86 @@ function updateTextInput(val) {
     renderScene();
 }
 
+function addBaseVectors(){
+    var xMat = new THREE.LineBasicMaterial({
+        color: 0xFF0000
+    });
+
+    var yMat = new THREE.LineBasicMaterial({
+        color: 0x00FF00
+    });
+
+    var zMat = new THREE.LineBasicMaterial({
+        color: 0x0000FF
+    });
+    
+    xVerts = [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(10, 0, 0),
+    ];
+
+    yVerts = [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 10, 0),
+    ];
+
+    zVerts = [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, 10),
+    ];
+    
+    var xPos = new Float32Array(xVerts.length * 3);
+    var yPos = new Float32Array(yVerts.length * 3);
+    var zPos = new Float32Array(zVerts.length * 3);
+    
+    for (var i = 0; i < xVerts.length; i++) {
+    
+        xPos[i * 3] = xVerts[i].x;
+        xPos[i * 3 + 1] = xVerts[i].y;
+        xPos[i * 3 + 2] = xVerts[i].z;
+
+        yPos[i * 3] = yVerts[i].x;
+        yPos[i * 3 + 1] = yVerts[i].y;
+        yPos[i * 3 + 2] = yVerts[i].z;
+
+        zPos[i * 3] = zVerts[i].x;
+        zPos[i * 3 + 1] = zVerts[i].y;
+        zPos[i * 3 + 2] = zVerts[i].z;
+    
+    }
+    
+    indices = [0, 1];
+    
+    var xGeo = new THREE.BufferGeometry();
+    xGeo.setAttribute('position', new THREE.BufferAttribute(xPos, 3));
+    xGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
+    var xLine = new THREE.LineSegments(xGeo, xMat);
+
+    var yGeo = new THREE.BufferGeometry();
+    yGeo.setAttribute('position', new THREE.BufferAttribute(yPos, 3));
+    yGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
+    var yLine = new THREE.LineSegments(yGeo, yMat);
+
+    var zGeo = new THREE.BufferGeometry();
+    zGeo.setAttribute('position', new THREE.BufferAttribute(zPos, 3));
+    zGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
+    var zLine = new THREE.LineSegments(zGeo, zMat);
+
+    scene.add(xLine);
+    scene.add(yLine);
+    scene.add(zLine);
+}
+
 function addGuidePlane(){
     const guidePlaneGeo = new THREE.BufferGeometry();
     const guidePlaneVerts = new Float32Array( [
-        -guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos,
-        guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos,
-        guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
+        -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
+        guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
+        guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
 
-        guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
-        -guidePlaneWidth/2.0, guidePlaneWidth/2.0, zPos,
-        -guidePlaneWidth/2.0, -guidePlaneWidth/2.0, zPos
+        guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
+        -guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
+        -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos
     ] );
 
     guidePlaneGeo.setAttribute( 'position', new THREE.BufferAttribute( guidePlaneVerts, 3 ) );
@@ -119,18 +191,11 @@ function renderScene(){
         scene.add( verts );
     }
 
-    var origin = new Float32Array([0, 0, 0]);
-    const originGeo = new THREE.BufferGeometry();
-    originGeo.setAttribute( 'position', new THREE.Float32BufferAttribute( origin, 3 ) );
-    const originMat = new THREE.PointsMaterial( { color: 0x000000 } );
-    const originVerts = new THREE.Points( originGeo, originMat );
-
-    scene.add( originVerts );
-
     var light = new THREE.PointLight(0xFFFFFF, 1, 500);
     light.position.set(10, 0, 25);
     scene.add(light);
 
+    addBaseVectors();
     addGuidePlane();
 
     renderer.render(scene, camera);
@@ -155,6 +220,10 @@ function main(){
     }
 
     window.addEventListener('resize', () => {
+
+        guidePlaneHeight = window.innerHeight * factor;
+        guidePlaneWidth = window.innerWidth * factor;
+
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
