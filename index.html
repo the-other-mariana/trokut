@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Trokut v0.1</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark" style="position: absolute; z-index: 2; width: 100%;">
         <button type="button" class="btn btn-danger" onclick = "newObject(event);" id="btn-new"><img src = "icons/object-icon.png" class = "app-icon">New</button>
+        <div class="range-container">
+            <p style="display: inline; color: white; margin: 10px;">Depth z: </p>
+            <input type="text" id="textInput" value="0" style="width: 15%; display: inline; text-align: center;">
+            <input type="range" class="form-range" min="0" max="50" step="1" value="0" width = "width: 100% !important;" onchange = "updateTextInput(this.value);" style="margin-top: 5px; display: inline;">
+        </div>
     </nav>
     <script src="lib/three.min.js"></script>
     <script src="lib/MathUtils.js"></script>

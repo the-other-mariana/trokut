@@ -16,3 +16,7 @@ canvas {
 #btn-new{
     position: relative;
 }
+
+.range-container{
+    display: inline;
+}
