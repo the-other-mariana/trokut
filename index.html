@@ -13,8 +13,8 @@
         <button type="button" class="btn btn-danger" onclick = "newObject(event);" id="btn-new"><img src = "icons/object-icon.png" class = "app-icon">New</button>
         <div class="range-container">
             <p style="display: inline; color: white; margin: 10px;">Depth z: </p>
-            <input type="text" id="textInput" value="0" style="width: 15%; display: inline; text-align: center;">
-            <input type="range" class="form-range" min="0" max="40" step="1" value="0" width = "width: 100% !important;" onchange = "updateTextInput(this.value);" style="margin-top: 5px; display: inline;">
+            <input type="text" class="form-text" id="textInput" value="0" style="width: 15%; display: inline; text-align: center;">
+            <input type="range" id="depth-range" class="form-range" min="0" max="40" step="1" value="0" width = "width: 100% !important;" style="margin-top: 5px; display: inline;">
         </div>
     </nav>
     <script src="lib/three.min.js"></script>

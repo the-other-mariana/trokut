@@ -12,6 +12,8 @@ var radius = zPosCamera;
 var theta = 45;
 var phi = 30;
 var isMouseDown = false;
+var mouseDownPos = new THREE.Vector2(0, 0);
+var mouseUpPos = new THREE.Vector2(0, 0);
 
 var mode = "normal";
 var factor = 0.01;
@@ -26,10 +28,10 @@ function updateTextInput(val) {
 }
 
 function getCameraPosition(radius, theta, phi){
-    var x = radius * Math.sin(theta * PI / 360.0) * Math.cos(phi * PI / 360.0);
-    var y = radius * Math.sin(phi * PI / 360.0);
-    var z = radius * Math.cos(theta * PI / 360.0) * Math.cos(phi * PI / 360.0);
-
+    var x = radius * Math.cos(phi * PI / 360.0) * Math.sin(theta * PI / 360.0);
+    var y = radius * Math.sin(phi * PI / 360.0); 
+    var z = radius * Math.cos(phi * PI / 360.0) * Math.cos(theta * PI / 360.0);
+    console.log(x,y,z);
     return new THREE.Vector3(x, y , z);
 }
 
@@ -44,6 +46,36 @@ function mousewheelHandler(event){
     camera.updateMatrix();
     renderScene();
 
+}
+
+function mousemoveHandler(event){
+    var mouseClass = event.target.className;
+    if (mouseClass == 'form-range'){
+        var val = document.getElementById("depth-range").value;
+        updateTextInput(val);
+    }
+}
+
+function mousedownHandler(event){
+    isMouseDown = true;
+    mouseDownPos.x = event.clientX;
+    mouseDownPos.y = event.clientY;
+}
+
+function mouseupHandler(event){
+    mouseUpPos.x = event.clientX;
+    mouseUpPos.y = event.clientY;
+    if (mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y) {
+        // if not drag, add a vertex
+        pt = mouseToScenePosition(event);
+
+        g_verts[objIndex].push(pt.x);
+        g_verts[objIndex].push(pt.y);
+        g_verts[objIndex].push(pt.z);
+
+        renderScene();
+    }
+    
 }
 
 function addBaseVectors(){
@@ -227,12 +259,12 @@ function main(){
     canvas.style.zIndex = 1;
 
     document.body.appendChild(canvas);
-    
+    /*
     canvas.onclick = function(ev){
         console.log('canvas clicked!');
         canvasClick(ev, );
     }
-
+    */
     window.addEventListener('resize', () => {
 
         guidePlaneHeight = window.innerHeight * factor;
@@ -244,6 +276,9 @@ function main(){
     });
 
     window.addEventListener('mousewheel', mousewheelHandler, false);
+    window.addEventListener('mousemove', mousemoveHandler, false);
+    window.addEventListener('mousedown', mousedownHandler, false);
+    window.addEventListener('mouseup', mouseupHandler, false);
 
     initTransforms();
     renderScene();
