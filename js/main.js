@@ -19,69 +19,48 @@ function updateTextInput(val) {
 }
 
 function addBaseVectors(){
-    var xMat = new THREE.LineBasicMaterial({
-        color: 0xFF0000
-    });
-
-    var yMat = new THREE.LineBasicMaterial({
-        color: 0x00FF00
-    });
-
-    var zMat = new THREE.LineBasicMaterial({
-        color: 0x0000FF
-    });
+    var xyzMat = [new THREE.LineBasicMaterial({color: 0xFF0000}), new THREE.LineBasicMaterial({color: 0x00FF00}), new THREE.LineBasicMaterial({color: 0x0000FF})];
+    var xyzVerts = [
+        [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(10, 0, 0),
+        ],
+        [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 10, 0),
+        ],
+        [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, 10),
+        ]
+    ]
     
-    xVerts = [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(10, 0, 0),
-    ];
-
-    yVerts = [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 10, 0),
-    ];
-
-    zVerts = [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 0, 10),
-    ];
+    var xyzPos = [new Float32Array(xyzVerts[0].length * 3), new Float32Array(xyzVerts[1].length * 3), new Float32Array(xyzVerts[2].length * 3)];
     
-    var xPos = new Float32Array(xVerts.length * 3);
-    var yPos = new Float32Array(yVerts.length * 3);
-    var zPos = new Float32Array(zVerts.length * 3);
-    
-    for (var i = 0; i < xVerts.length; i++) {
-    
-        xPos[i * 3] = xVerts[i].x;
-        xPos[i * 3 + 1] = xVerts[i].y;
-        xPos[i * 3 + 2] = xVerts[i].z;
-
-        yPos[i * 3] = yVerts[i].x;
-        yPos[i * 3 + 1] = yVerts[i].y;
-        yPos[i * 3 + 2] = yVerts[i].z;
-
-        zPos[i * 3] = zVerts[i].x;
-        zPos[i * 3 + 1] = zVerts[i].y;
-        zPos[i * 3 + 2] = zVerts[i].z;
-    
+    for (var v = 0; v < 3; v++){
+        for (var i = 0; i < xyzVerts[0].length; i++) {
+            xyzPos[v][i * 3] = xyzVerts[v][i].x;
+            xyzPos[v][i * 3 + 1] = xyzVerts[v][i].y;
+            xyzPos[v][i * 3 + 2] = xyzVerts[v][i].z;
+        }
     }
     
     indices = [0, 1];
     
     var xGeo = new THREE.BufferGeometry();
-    xGeo.setAttribute('position', new THREE.BufferAttribute(xPos, 3));
+    xGeo.setAttribute('position', new THREE.BufferAttribute(xyzPos[0], 3));
     xGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
-    var xLine = new THREE.LineSegments(xGeo, xMat);
+    var xLine = new THREE.LineSegments(xGeo, xyzMat[0]);
 
     var yGeo = new THREE.BufferGeometry();
-    yGeo.setAttribute('position', new THREE.BufferAttribute(yPos, 3));
+    yGeo.setAttribute('position', new THREE.BufferAttribute(xyzPos[1], 3));
     yGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
-    var yLine = new THREE.LineSegments(yGeo, yMat);
+    var yLine = new THREE.LineSegments(yGeo, xyzMat[1]);
 
     var zGeo = new THREE.BufferGeometry();
-    zGeo.setAttribute('position', new THREE.BufferAttribute(zPos, 3));
+    zGeo.setAttribute('position', new THREE.BufferAttribute(xyzPos[2], 3));
     zGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
-    var zLine = new THREE.LineSegments(zGeo, zMat);
+    var zLine = new THREE.LineSegments(zGeo, xyzMat[2]);
 
     scene.add(xLine);
     scene.add(yLine);
