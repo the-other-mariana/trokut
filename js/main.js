@@ -15,6 +15,7 @@ var isMouseDown = false;
 var mouseDownPos = new THREE.Vector2(0, 0);
 var mouseUpPos = new THREE.Vector2(0, 0);
 var mouseDownTheta, mouseDownPhi;
+// https://mrdoob.com/projects/voxels/#A/adjUhYhUheleW
 
 var mode = "normal";
 var factor = 0.01;
