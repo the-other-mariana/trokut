@@ -1,10 +1,17 @@
 var objIndex = 0;
 var zPos = 1.0;
+var zPosCamera = 40;
 var g_verts = [[]];
 var g_transforms = [[]];
 var scene;
 var camera;
 var renderer;
+const PI = 3.141592;
+
+var radius = zPosCamera;
+var theta = 45;
+var phi = 30;
+var isMouseDown = false;
 
 var mode = "normal";
 var factor = 0.01;
@@ -16,6 +23,27 @@ function updateTextInput(val) {
     document.getElementById('textInput').value = val;
 
     renderScene();
+}
+
+function getCameraPosition(radius, theta, phi){
+    var x = radius * Math.sin(theta * PI / 360.0) * Math.cos(phi * PI / 360.0);
+    var y = radius * Math.sin(phi * PI / 360.0);
+    var z = radius * Math.cos(theta * PI / 360.0) * Math.cos(phi * PI / 360.0);
+
+    return new THREE.Vector3(x, y , z);
+}
+
+function mousewheelHandler(event){
+
+    radius -= event.wheelDeltaY * 0.05;
+    var pos = getCameraPosition(radius, theta, phi);
+    camera.position.x = pos.x;
+    camera.position.y = pos.y;
+    camera.position.z = pos.z;
+    
+    camera.updateMatrix();
+    renderScene();
+
 }
 
 function addBaseVectors(){
@@ -153,6 +181,10 @@ function canvasClick(ev){
 }
 
 function renderScene(){
+    var pos = getCameraPosition(radius, theta, phi);
+    camera.position.set(pos.x, pos.y, pos.z);
+    camera.updateMatrix();
+
     scene = new THREE.Scene();
     renderer.render(scene, camera);
 
@@ -183,7 +215,10 @@ function renderScene(){
 function main(){
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 40);
+    //camera.position.set(0, 0, zPosCamera);
+    var pos = getCameraPosition(radius, theta, phi);
+    camera.position.set(pos.x, pos.y, pos.z);
+    camera.updateMatrix();
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor("#e5e5e5");
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -207,6 +242,8 @@ function main(){
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
     });
+
+    window.addEventListener('mousewheel', mousewheelHandler, false);
 
     initTransforms();
     renderScene();
