@@ -14,6 +14,7 @@ var phi = 30;
 var isMouseDown = false;
 var mouseDownPos = new THREE.Vector2(0, 0);
 var mouseUpPos = new THREE.Vector2(0, 0);
+var mouseDownTheta, mouseDownPhi;
 
 var mode = "normal";
 var factor = 0.01;
@@ -53,6 +54,24 @@ function mousemoveHandler(event){
     if (mouseClass == 'form-range'){
         var val = document.getElementById("depth-range").value;
         updateTextInput(val);
+    }else {
+        if (isMouseDown){
+            currPos = new THREE.Vector2(event.clientX, event.clientY);
+            prevPos = new THREE.Vector2(mouseDownPos.x, mouseDownPos.y);
+            deltaX = currPos.x - prevPos.x;
+            deltaY = currPos.y - prevPos.y;
+            theta -= deltaX * 0.005;
+            phi += deltaY * 0.005;
+            phi = Math.min(180, Math.max(0,phi));
+
+            var pos = getCameraPosition(radius, theta, phi);
+            camera.position.x = pos.x;
+            camera.position.y = pos.y;
+            camera.position.z = pos.z;
+
+            camera.updateMatrix();
+            renderScene();
+        }
     }
 }
 
@@ -60,9 +79,13 @@ function mousedownHandler(event){
     isMouseDown = true;
     mouseDownPos.x = event.clientX;
     mouseDownPos.y = event.clientY;
+    mouseDownPhi = phi;
+    mouseDownTheta = theta;
+    console.log("mouse down!");
 }
 
 function mouseupHandler(event){
+    isMouseDown = false;
     mouseUpPos.x = event.clientX;
     mouseUpPos.y = event.clientY;
     if (mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y) {
