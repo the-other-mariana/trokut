@@ -63,7 +63,6 @@ function mousemoveHandler(event){
             deltaY = currPos.y - prevPos.y;
             theta -= deltaX * 0.005;
             phi += deltaY * 0.005;
-            phi = Math.min(180, Math.max(0,phi));
 
             var pos = getCameraPosition(radius, theta, phi);
             camera.position.x = pos.x;
@@ -239,6 +238,7 @@ function canvasClick(ev){
 function renderScene(){
     var pos = getCameraPosition(radius, theta, phi);
     camera.position.set(pos.x, pos.y, pos.z);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
     camera.updateMatrix();
 
     scene = new THREE.Scene();
