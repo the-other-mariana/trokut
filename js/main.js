@@ -21,6 +21,15 @@ var mode = "normal";
 var factor = 0.01;
 var guidePlaneWidth = window.innerWidth * factor;
 var guidePlaneHeight = window.innerHeight * factor;
+var guidePlaneVerts = new Float32Array( [
+    -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
+    guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
+    guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
+
+    guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
+    -guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
+    -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos
+] );
 
 function updateTextInput(val) {
     zPos = parseFloat(val);
@@ -152,15 +161,11 @@ function addBaseVectors(){
 
 function addGuidePlane(){
     const guidePlaneGeo = new THREE.BufferGeometry();
-    const guidePlaneVerts = new Float32Array( [
-        -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
-        guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos,
-        guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
-
-        guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
-        -guidePlaneWidth/2.0, guidePlaneHeight/2.0, zPos,
-        -guidePlaneWidth/2.0, -guidePlaneHeight/2.0, zPos
-    ] );
+    var start = 2;
+    numVerts = 6;
+    for (var i = start; i < numVerts * 3; i+= 3){
+        guidePlaneVerts[i] = zPos;
+    }
 
     guidePlaneGeo.setAttribute( 'position', new THREE.BufferAttribute( guidePlaneVerts, 3 ) );
     const guidePlaneMat = new THREE.MeshBasicMaterial( { color: 0x000000 } );
@@ -215,7 +220,23 @@ function mouseToScenePosition(ev){
     mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
     // unit normal vector as normal of the plane
-    planeNormal.copy(camera.position).normalize();
+    // get two coplanar vectors of the guidePlane
+    // v1 goes from vet 0 to vert 1
+    var v1 = new THREE.Vector3(
+        guidePlaneVerts[1 * 3 + 0] - guidePlaneVerts[0 * 3 + 0],
+        guidePlaneVerts[1 * 3 + 1] - guidePlaneVerts[0 * 3 + 1],
+        guidePlaneVerts[1 * 3 + 2] - guidePlaneVerts[0 * 3 + 2]
+    );
+    // v2 goes from vert 0 to vert 2
+    var v2 = new THREE.Vector3(
+        guidePlaneVerts[2 * 3 + 0] - guidePlaneVerts[0 * 3 + 0],
+        guidePlaneVerts[2 * 3 + 1] - guidePlaneVerts[0 * 3 + 1],
+        guidePlaneVerts[2 * 3 + 2] - guidePlaneVerts[0 * 3 + 2]
+    );
+    // get normal vector of the guidePlane
+    var n = v1.cross(v2);
+    console.log(v1);
+    planeNormal.copy(n).normalize();
     plane.setFromNormalAndCoplanarPoint(planeNormal, new THREE.Vector3(0, 0, zPos));
     // raycast from camera to mouse
     raycaster.setFromCamera(mouse, camera);
