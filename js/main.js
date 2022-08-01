@@ -17,6 +17,9 @@ var mouseUpPos = new THREE.Vector2(0, 0);
 var mouseDownTheta, mouseDownPhi;
 // https://mrdoob.com/projects/voxels/#A/adjUhYhUheleW
 
+var onVertSelect = false;
+var mouseHover = '';
+
 var mode = "normal";
 var factor = 0.01;
 var guidePlaneWidth = window.innerWidth * factor;
@@ -38,11 +41,15 @@ function updateTextInput(val) {
     renderScene();
 }
 
+function updateVertSelect(event){
+    onVertSelect = event.target.checked;
+    console.log(onVertSelect);
+}
+
 function getCameraPosition(radius, theta, phi){
     var x = radius * Math.cos(phi * PI / 360.0) * Math.sin(theta * PI / 360.0);
     var y = radius * Math.sin(phi * PI / 360.0); 
     var z = radius * Math.cos(phi * PI / 360.0) * Math.cos(theta * PI / 360.0);
-    console.log(x,y,z);
     return new THREE.Vector3(x, y , z);
 }
 
@@ -61,6 +68,7 @@ function mousewheelHandler(event){
 
 function mousemoveHandler(event){
     var mouseClass = event.target.className;
+    mouseHover = mouseClass;
     if (mouseClass == 'form-range'){
         var val = document.getElementById("depth-range").value;
         updateTextInput(val);
@@ -97,7 +105,9 @@ function mouseupHandler(event){
     isMouseDown = false;
     mouseUpPos.x = event.clientX;
     mouseUpPos.y = event.clientY;
-    if (mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y) {
+    if ((mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y)
+    && mouseHover == "") {
+        console.log("class" + mouseHover);
         // if not drag, add a vertex
         pt = mouseToScenePosition(event);
 
