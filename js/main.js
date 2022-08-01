@@ -3,6 +3,7 @@ var zPos = 1.0;
 var zPosCamera = 40;
 var g_verts = [[]];
 var g_transforms = [[]];
+var g_colors = [[]];
 var scene;
 var camera;
 var renderer;
@@ -19,6 +20,7 @@ var mouseDownTheta, mouseDownPhi;
 
 var onVertSelect = false;
 var mouseHover = '';
+var selectedVerts = [];
 
 var mode = "normal";
 var factor = 0.01;
@@ -43,7 +45,6 @@ function updateTextInput(val) {
 
 function updateVertSelect(event){
     onVertSelect = event.target.checked;
-    console.log(onVertSelect);
 }
 
 function getCameraPosition(radius, theta, phi){
@@ -107,15 +108,56 @@ function mouseupHandler(event){
     mouseUpPos.y = event.clientY;
     if ((mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y)
     && mouseHover == "") {
-        console.log("class" + mouseHover);
-        // if not drag, add a vertex
-        pt = mouseToScenePosition(event);
+        if (!onVertSelect){
+            // if not drag, if on canvas, not onVertSelect, add a vertex
+            pt = mouseToScenePosition(event);
 
-        g_verts[objIndex].push(pt.x);
-        g_verts[objIndex].push(pt.y);
-        g_verts[objIndex].push(pt.z);
+            g_verts[objIndex].push(pt.x);
+            g_verts[objIndex].push(pt.y);
+            g_verts[objIndex].push(pt.z);
 
-        renderScene();
+            var color = new THREE.Color();
+            color.setRGB(1, 0, 0); // TODO: each object w desired color
+            g_colors[objIndex].push(color.r);
+            g_colors[objIndex].push(color.g);
+            g_colors[objIndex].push(color.b);
+
+            renderScene();
+        } else {
+            // onVertSelect
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            var direction = raycaster.ray.direction;
+            var origin = raycaster.ray.origin;
+            
+            selectedVerts = []
+            for (var i = 0; i < g_verts[objIndex].length; i+=3){
+                var vert = new THREE.Vector3(
+                    g_verts[objIndex][i + 0],
+                    g_verts[objIndex][i + 1],
+                    g_verts[objIndex][i + 2]
+                );
+                var u = new THREE.Vector3(vert.x - origin.x, vert.y - origin.y, vert.z - origin.z).normalize();
+                var v = direction.normalize();
+                var angle = Math.acos(u.dot(v)) * 180 / PI;
+                var eps = 1;
+                if (Math.abs(angle) <= eps){
+                    selectedVerts.push(i/3);
+                    var color = new THREE.Color();
+                    color.setRGB(0, 0, 1); // selected to blue
+                    g_colors[objIndex][i + 0] = color.r;
+                    g_colors[objIndex][i + 1] = color.g;
+                    g_colors[objIndex][i + 2] = color.b;
+                    console.log("Vertex #" + i/3 + " selected!");
+                    console.log(g_colors);
+                }
+            }
+            renderScene();
+        }
     }
     
 }
@@ -212,6 +254,7 @@ function newObject(event){
     mode = "normal";
     objIndex += 1;
     g_verts.push([]);
+    g_colors.push([]);
     initTransforms();
     console.log("New Object #" + objIndex);
 }
@@ -281,10 +324,15 @@ function renderScene(){
             continue;
         }
         var vertices = new Float32Array(g_verts[i]);
+        var colors = new Float32Array(g_colors[i]);
+        
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-        const material = new THREE.PointsMaterial( { color: 0xff0000 } );
+        geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+        const material = new THREE.PointsMaterial( { vertexColors: true } );
         const verts = new THREE.Points( geometry, material );
+        console.log(verts);
 
         scene.add( verts );
     }
@@ -314,12 +362,6 @@ function main(){
     canvas.style.zIndex = 1;
 
     document.body.appendChild(canvas);
-    /*
-    canvas.onclick = function(ev){
-        console.log('canvas clicked!');
-        canvasClick(ev, );
-    }
-    */
     window.addEventListener('resize', () => {
 
         guidePlaneHeight = window.innerHeight * factor;
