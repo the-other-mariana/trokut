@@ -45,6 +45,19 @@ function updateTextInput(val) {
 
 function updateVertSelect(event){
     onVertSelect = event.target.checked;
+    if (!onVertSelect){
+        console.log(selectedVerts);
+        for(var i = 0; i < selectedVerts.length; i++){
+            // TODO: color being desired color
+            var color = new THREE.Color();
+            color.setRGB(1, 0, 0);
+            g_colors[objIndex][selectedVerts[i] * 3 + 0] = color.r;
+            g_colors[objIndex][selectedVerts[i] * 3 + 1] = color.g;
+            g_colors[objIndex][selectedVerts[i] * 3 + 2] = color.b;
+        }
+        selectedVerts = [];
+        renderScene();
+    }
 }
 
 function getCameraPosition(radius, theta, phi){
@@ -134,7 +147,6 @@ function mouseupHandler(event){
             var direction = raycaster.ray.direction;
             var origin = raycaster.ray.origin;
             
-            selectedVerts = []
             for (var i = 0; i < g_verts[objIndex].length; i+=3){
                 var vert = new THREE.Vector3(
                     g_verts[objIndex][i + 0],
