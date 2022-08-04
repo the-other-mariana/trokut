@@ -4,6 +4,8 @@ var zPosCamera = 40;
 var g_verts = [[]];
 var g_transforms = [[]];
 var g_colors = [[]];
+var g_faces = [[]];
+
 var scene;
 var camera;
 var renderer;
@@ -262,11 +264,20 @@ function initTransforms(){
     g_transforms[objIndex].push(["normal"]); // mode
 }
 
+function newFace(event){
+    if (selectedVerts.length == 3){
+        g_faces[objIndex].push(selectedVerts);
+        console.log(g_faces);
+    }
+    renderScene();
+}
+
 function newObject(event){
     mode = "normal";
     objIndex += 1;
     g_verts.push([]);
     g_colors.push([]);
+    g_faces.push([]);
     initTransforms();
     console.log("New Object #" + objIndex);
 }
@@ -335,6 +346,8 @@ function renderScene(){
         if(g_transforms[i][8][0] == "inactive"){
             continue;
         }
+
+        // draw vertices
         var vertices = new Float32Array(g_verts[i]);
         var colors = new Float32Array(g_colors[i]);
         
@@ -347,6 +360,36 @@ function renderScene(){
         console.log(verts);
 
         scene.add( verts );
+    }
+    // for loop through all objects' faces
+    for (var i = 0; i < g_faces.length; i++){
+        if(g_transforms[i][8][0] == "inactive"){
+            continue;
+        }
+        // draw faces
+        var faces = []
+        for (var j = 0; j < g_faces[i].length; j++){
+            var idx = g_faces[i][j];
+            //var p1 = new THREE.Vector3(g_verts[i][idx[0]*3 + 0], g_verts[i][idx[0]*3 + 1], g_verts[i][idx[0]*3 + 2]);
+            //var p2 = new THREE.Vector3(g_verts[i][idx[1]*3 + 0], g_verts[i][idx[1]*3 + 1], g_verts[i][idx[1]*3 + 2]);
+            //var p3 = new THREE.Vector3(g_verts[i][idx[2]*3 + 0], g_verts[i][idx[2]*3 + 1], g_verts[i][idx[2]*3 + 2]);
+            for(var k = 0; k < 3; k++){
+                faces.push(
+                    g_verts[i][idx[k]*3 + 0],
+                    g_verts[i][idx[k]*3 + 1],
+                    g_verts[i][idx[k]*3 + 2]
+                );
+            }
+        }
+        const facesGeo = new THREE.BufferGeometry();
+        facesGeo.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(faces), 3 ) );
+        const facesMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
+        facesMat.opacity = 0.5;
+        facesMat.transparent = true;
+        const facesMesh = new THREE.Mesh( facesGeo, facesMat );
+
+        scene.add( facesMesh );
+        renderer.render(scene, camera);
     }
 
     var light = new THREE.PointLight(0xFFFFFF, 1, 500);
