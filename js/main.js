@@ -45,19 +45,23 @@ function updateTextInput(val) {
     renderScene();
 }
 
+function unselectVerts(){
+    for(var i = 0; i < selectedVerts.length; i++){
+        // TODO: color being desired color
+        var color = new THREE.Color();
+        color.setRGB(1, 0, 0);
+        g_colors[objIndex][selectedVerts[i] * 3 + 0] = color.r;
+        g_colors[objIndex][selectedVerts[i] * 3 + 1] = color.g;
+        g_colors[objIndex][selectedVerts[i] * 3 + 2] = color.b;
+    }
+    selectedVerts = [];
+}
+
 function updateVertSelect(event){
     onVertSelect = event.target.checked;
     if (!onVertSelect){
         console.log(selectedVerts);
-        for(var i = 0; i < selectedVerts.length; i++){
-            // TODO: color being desired color
-            var color = new THREE.Color();
-            color.setRGB(1, 0, 0);
-            g_colors[objIndex][selectedVerts[i] * 3 + 0] = color.r;
-            g_colors[objIndex][selectedVerts[i] * 3 + 1] = color.g;
-            g_colors[objIndex][selectedVerts[i] * 3 + 2] = color.b;
-        }
-        selectedVerts = [];
+        unselectVerts();
         renderScene();
     }
 }
@@ -267,7 +271,9 @@ function initTransforms(){
 function newFace(event){
     if (selectedVerts.length == 3){
         g_faces[objIndex].push(selectedVerts);
-        console.log(g_faces);
+        unselectVerts();
+        $("#vertSelectCheckbox").prop('checked', false);
+        onVertSelect = false;
     }
     renderScene();
 }
