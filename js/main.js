@@ -164,6 +164,7 @@ function mouseupHandler(event){
                 var angle = Math.acos(u.dot(v)) * 180 / PI;
                 var eps = 1;
                 if (Math.abs(angle) <= eps){
+                    // click instersects with a vertex
                     selectedVerts.push(i/3);
                     var color = new THREE.Color();
                     color.setRGB(0, 0, 1); // selected to blue
@@ -348,7 +349,7 @@ function renderScene(){
     scene = new THREE.Scene();
     renderer.render(scene, camera);
 
-    // for loop through all object's vertices
+    // for loop through all objects' vertices
     for (var i = 0; i < g_verts.length; i++){
         if(g_transforms[i][8][0] == "inactive"){
             continue;
@@ -375,12 +376,12 @@ function renderScene(){
         }
         // draw faces
         var faces = []
+        // loop through ith object's faces (a face is an array of 3 indices)
         for (var j = 0; j < g_faces[i].length; j++){
+            // idx is the ith object's jth face (idx = an array of 3 indices)
             var idx = g_faces[i][j];
-            //var p1 = new THREE.Vector3(g_verts[i][idx[0]*3 + 0], g_verts[i][idx[0]*3 + 1], g_verts[i][idx[0]*3 + 2]);
-            //var p2 = new THREE.Vector3(g_verts[i][idx[1]*3 + 0], g_verts[i][idx[1]*3 + 1], g_verts[i][idx[1]*3 + 2]);
-            //var p3 = new THREE.Vector3(g_verts[i][idx[2]*3 + 0], g_verts[i][idx[2]*3 + 1], g_verts[i][idx[2]*3 + 2]);
             for(var k = 0; k < 3; k++){
+                // faces pushes xyz (+0, +1, +2) of ith object's vertex at position idx[k]
                 faces.push(
                     g_verts[i][idx[k]*3 + 0],
                     g_verts[i][idx[k]*3 + 1],
