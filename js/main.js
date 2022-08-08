@@ -172,6 +172,7 @@ function mouseupHandler(event){
                     g_colors[objIndex][i + 2] = color.b;
                     console.log("Vertex #" + i/3 + " selected!");
                     console.log(g_colors);
+                    break;
                 }
             }
             renderScene();
