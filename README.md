@@ -12,4 +12,4 @@ Create and manipulate 3d objects in the web. Useful for visualization of tranfor
 
 ## Current State
 
-![img](sc/faces2.png)
+![img](sc/cube.png)
