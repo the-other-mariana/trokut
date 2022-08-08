@@ -380,21 +380,33 @@ function renderScene(){
         for (var j = 0; j < g_faces[i].length; j++){
             // idx is the ith object's jth face (idx = an array of 3 indices)
             var idx = g_faces[i][j];
+            var facePts = []
             for(var k = 0; k < 3; k++){
                 // faces pushes xyz (+0, +1, +2) of ith object's vertex at position idx[k]
-                faces.push(
-                    g_verts[i][idx[k]*3 + 0],
-                    g_verts[i][idx[k]*3 + 1],
-                    g_verts[i][idx[k]*3 + 2]
-                );
+                var x = g_verts[i][idx[k]*3 + 0];
+                var y = g_verts[i][idx[k]*3 + 1];
+                var z = g_verts[i][idx[k]*3 + 2];
+                faces.push(x,y,z);
+                facePts.push(new THREE.Vector3(x, y, z));
             }
+            // last point joins vertex 2 and 0
+            facePts.push(facePts[0]);
+            const linesMat = new THREE.LineBasicMaterial( { color: 0x000000 } );
+            const linesGeo = new THREE.BufferGeometry().setFromPoints( facePts );
+            const line = new THREE.Line( linesGeo, linesMat );
+            scene.add(line);
         }
+        // face triangle
         const facesGeo = new THREE.BufferGeometry();
         facesGeo.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(faces), 3 ) );
         const facesMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
         facesMat.opacity = 0.5;
         facesMat.transparent = true;
         const facesMesh = new THREE.Mesh( facesGeo, facesMat );
+        // face lines
+        
+
+
 
         scene.add( facesMesh );
         renderer.render(scene, camera);
