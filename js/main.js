@@ -1,5 +1,5 @@
 var objIndex = 0;
-var zPos = 1.0;
+var zPos = 0.0;
 var zPosCamera = 40;
 var g_verts = [[]];
 var g_transforms = [[]];
@@ -126,9 +126,10 @@ function mouseupHandler(event){
     mouseUpPos.x = event.clientX;
     mouseUpPos.y = event.clientY;
     if ((mouseDownPos.x == mouseUpPos.x && mouseDownPos.y == mouseUpPos.y)
-    && mouseHover == "") {
+    && mouseHover == ""
+    && event.which == 1) { // 1 for left, 2 for wheel and 3 for right
         if (!onVertSelect){
-            // if not drag, if on canvas, not onVertSelect, add a vertex
+            // if not drag, if on canvas, if left click, not onVertSelect, add a vertex
             pt = mouseToScenePosition(event);
 
             g_verts[objIndex].push(pt.x);
@@ -319,7 +320,6 @@ function mouseToScenePosition(ev){
     );
     // get normal vector of the guidePlane
     var n = v1.cross(v2);
-    console.log(v1);
     planeNormal.copy(n).normalize();
     plane.setFromNormalAndCoplanarPoint(planeNormal, new THREE.Vector3(0, 0, zPos));
     // raycast from camera to mouse
@@ -365,7 +365,6 @@ function renderScene(){
 
         const material = new THREE.PointsMaterial( { vertexColors: true } );
         const verts = new THREE.Points( geometry, material );
-        console.log(verts);
 
         scene.add( verts );
     }
