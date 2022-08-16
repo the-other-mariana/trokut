@@ -45,6 +45,28 @@ function updateTextInput(val) {
     renderScene();
 }
 
+function addGuideGrid(){
+    var gridSize = 20;
+    var gridGap = 2; // TODO: user chooses this
+    const linesMat = new THREE.LineBasicMaterial( { color: 0x000000 } );
+    for (var j = 0; j <= 2; j += 2){ 
+        for(var i = -1*(gridSize / 2); i <= (gridSize / 2); i+=gridGap){
+            var p1 = [-1*(gridSize / 2), 0, -1*(gridSize / 2)];
+            var p2 = [(gridSize / 2), 0, (gridSize / 2)];
+            p1[j] = i;
+            p2[j] = i;
+
+            p1 = new THREE.Vector3(p1[0], p1[1], p1[2]);
+            p2 = new THREE.Vector3(p2[0], p2[1], p2[2]);
+
+            const lineGeo = new THREE.BufferGeometry().setFromPoints( [p1, p2] );
+            const line = new THREE.Line( lineGeo, linesMat );
+            scene.add(line);
+        }
+    }
+    
+}
+
 function unselectVerts(){
     for(var i = 0; i < selectedVerts.length; i++){
         // TODO: color being desired color
@@ -402,11 +424,7 @@ function renderScene(){
         facesMat.opacity = 0.5;
         facesMat.transparent = true;
         const facesMesh = new THREE.Mesh( facesGeo, facesMat );
-        // face lines
         
-
-
-
         scene.add( facesMesh );
         renderer.render(scene, camera);
     }
@@ -415,6 +433,7 @@ function renderScene(){
     light.position.set(10, 0, 25);
     scene.add(light);
 
+    addGuideGrid();
     addBaseVectors();
     addGuidePlane();
 
