@@ -13,3 +13,5 @@ Create and manipulate 3d objects in the web. Useful for visualization of tranfor
 ## Current State
 
 ![img](sc/cube.png)
+
+![img](sc/sidebar-left.png)
