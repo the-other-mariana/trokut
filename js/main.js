@@ -468,6 +468,7 @@ function main(){
 
     //document.body.appendChild(canvas);
     $("#scene").append(canvas);
+    
     var percentage = 100 - (150 / window.innerWidth * 100);
     $("#right-sidebar").css('left', percentage + "%");
     
