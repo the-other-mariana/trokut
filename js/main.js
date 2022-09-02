@@ -6,6 +6,8 @@ var g_transforms = [[]];
 var g_colors = [[]];
 var g_faces = [[]];
 
+var mode = "normal";
+
 var scene;
 var camera;
 var renderer;
@@ -24,7 +26,6 @@ var onVertSelect = false;
 var mouseHover = '';
 var selectedVerts = [];
 
-var mode = "normal";
 var factor = 0.01;
 var guidePlaneWidth = window.innerWidth * factor;
 var guidePlaneHeight = window.innerHeight * factor;
@@ -43,6 +44,13 @@ function updateTextInput(val) {
     document.getElementById('textInput').value = val;
 
     renderScene();
+}
+
+function selectObject(event){
+    mode = "normal";
+    objIndex = parseInt(event.target.value);
+
+
 }
 
 function addGuideGrid(){
@@ -310,6 +318,10 @@ function newObject(event){
     g_colors.push([]);
     g_faces.push([]);
     initTransforms();
+
+    $("#sidebar").append('<button type="button" class="btn btn-secondary obj-item" onclick = "selectObject(event);" value = ' 
+    + (objIndex) + ' id = "' + (objIndex) +'">Object ' + (objIndex + 1) + '</button>');
+
     console.log("New Object #" + objIndex);
 }
 

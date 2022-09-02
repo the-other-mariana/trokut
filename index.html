@@ -22,6 +22,12 @@
             <input type="range" id="depth-range" class="form-range" min="0" max="40" step="1" value="0" width = "width: 100% !important;" style="margin-top: 5px; display: inline;">
         </div>
     </nav>
+
+    <div class="sidebar" id = "sidebar">
+        <button type="button" class="btn btn-light obj-item" style="background-color: transparent; color: white; border-color: transparent;">Objects</button>
+        <button type="button" class="btn btn-secondary obj-item" onclick = "selectObject(event);" value = 0 id = "0">Object 1
+        </button>
+    </div>
     <script src="lib/three.min.js"></script>
     <script src="lib/MathUtils.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

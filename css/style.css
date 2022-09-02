@@ -20,3 +20,18 @@ canvas {
 .range-container{
     display: inline;
 }
+
+.sidebar {
+    padding-top: 65px;
+    width: 150px;
+    background-color: #52525b;
+    position: fixed;
+    height: 100%;
+}
+
+.obj-item {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
