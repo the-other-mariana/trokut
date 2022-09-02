@@ -44,3 +44,9 @@ canvas {
     margin-right: auto;
     margin-top: 10px;
 }
+
+.control-title {
+    background-color: transparent; 
+    color: white; 
+    border-color: transparent;
+}

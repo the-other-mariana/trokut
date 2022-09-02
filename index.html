@@ -23,9 +23,18 @@
         </div>
     </nav>
     <div class="right-sidebar" id = "right-sidebar">
-        <button type="button" class="btn btn-light obj-item" style="background-color: transparent; color: white; border-color: transparent;">
+        <button type="button" class="btn btn-light obj-item control-title">
             Object 1
         </button>
+        <button type="button" class="btn btn-light obj-item control-title">
+            Translate
+        </button>
+        <div class="control-slidecontainer">
+            <button type="button" class="btn btn-light obj-item control-title">
+                Translate x:
+            </button>
+            <input type="range" id = "x-translate" min="-1" max="1" step="0.05" value="0.0" width = "width: 100px !important;" onchange = "updateTranslate(this.value, this.id);" style="margin-left: auto; margin-right: auto;">
+        </div>
     </div>
     <div class="sidebar" id = "sidebar">
         <button type="button" class="btn btn-light obj-item" style="background-color: transparent; color: white; border-color: transparent;">Objects</button>
