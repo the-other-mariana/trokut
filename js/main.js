@@ -466,7 +466,11 @@ function main(){
     canvas.setAttribute('id', 'canvas');
     canvas.style.zIndex = 1;
 
-    document.body.appendChild(canvas);
+    //document.body.appendChild(canvas);
+    $("#scene").append(canvas);
+    var percentage = 100 - (150 / window.innerWidth * 100);
+    $("#right-sidebar").css('left', percentage + "%");
+    
     window.addEventListener('resize', () => {
 
         guidePlaneHeight = window.innerHeight * factor;
@@ -475,7 +479,10 @@ function main(){
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        var percentage = 100 - (150 / window.innerWidth * 100);
+        $("#right-sidebar").css('left', percentage + "%");
     });
+    
 
     window.addEventListener('mousewheel', mousewheelHandler, false);
     window.addEventListener('mousemove', mousemoveHandler, false);
