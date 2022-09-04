@@ -50,3 +50,14 @@ canvas {
     color: white; 
     border-color: transparent;
 }
+
+.control-slidecontainer {
+    width: 100%;
+}
+
+.slider-center {
+margin: auto;
+width: 80%;
+margin-left: 20px;
+margin-right: 20px;
+}
