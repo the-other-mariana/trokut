@@ -96,6 +96,23 @@ function updateVertSelect(event){
     }
 }
 
+function updateTranslate(val, id){
+    if (id == "x-translate"){
+        console.log(val);
+        g_transforms[objIndex][0][3] = val;
+    }
+    if (id == "y-translate"){
+        g_transforms[objIndex][0][7] = val;
+    }
+    if (id == "z-translate"){
+        g_transforms[objIndex][0][11] = val;
+    }
+    mode = "modify";
+    g_transforms[objIndex][9][0] = mode;
+    // TODO: show mode on div
+    renderScene();
+}
+
 function getCameraPosition(radius, theta, phi){
     var x = radius * Math.cos(phi * PI / 360.0) * Math.sin(theta * PI / 360.0);
     var y = radius * Math.sin(phi * PI / 360.0); 
@@ -123,7 +140,7 @@ function mousemoveHandler(event){
         var val = document.getElementById("depth-range").value;
         updateTextInput(val);
     }else {
-        if (isMouseDown){
+        if (isMouseDown && mouseClass != 'slider-center'){
             currPos = new THREE.Vector2(event.clientX, event.clientY);
             prevPos = new THREE.Vector2(mouseDownPos.x, mouseDownPos.y);
             deltaX = currPos.x - prevPos.x;
@@ -374,6 +391,37 @@ function canvasClick(ev){
     renderScene();
 }
 
+function multiplyMtxPoint3D(mat, point) {
+    point = [point[0], point[1], point[2], 1.0];
+	var dim = 3;
+    var v = [0, 0, 0, 0]
+	for (var r = 0; r < dim + 1; r++) {
+		v[r] = 0;
+		for (var c = 0; c < dim + 1; c++) {
+			v[r] += mat.elements[(r * 4) + c] * point[c];
+		}
+	}
+    return v;
+}
+
+function applyTransforms(verts, matrices){
+    var vertices = new Float32Array(verts);
+    var translateMtx = new THREE.Matrix4().fromArray(matrices[0]);
+    // TODO: transform matrix
+    var transformMtx = translateMtx;
+    console.log(verts, transformMtx);
+    for(var v = 0; v < vertices.length; v+=3){
+        point = [vertices[v + 0], vertices[v + 1], vertices[v + 2]];
+        t_point = multiplyMtxPoint3D(transformMtx, point);
+        
+        vertices[v + 0] = t_point[0];
+        vertices[v + 1] = t_point[1]; 
+        vertices[v + 2] = t_point[2];
+    }
+    console.log(vertices);
+    return vertices;
+}
+
 function renderScene(){
     var pos = getCameraPosition(radius, theta, phi);
     camera.position.set(pos.x, pos.y, pos.z);
@@ -390,7 +438,8 @@ function renderScene(){
         }
 
         // draw vertices
-        var vertices = new Float32Array(g_verts[i]);
+        //var vertices = new Float32Array(g_verts[i]);
+        var vertices = applyTransforms(g_verts[i], g_transforms[i]);
         var colors = new Float32Array(g_colors[i]);
         
         const geometry = new THREE.BufferGeometry();
