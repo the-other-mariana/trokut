@@ -15,3 +15,7 @@ Create and manipulate 3d objects in the web. Useful for visualization of tranfor
 ![img](sc/cube.png)
 
 ![img](sc/sidebar-left.png)
+
+## To Do
+
+- try to use vertex shader of webgl for matrix multiplications: https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram 
